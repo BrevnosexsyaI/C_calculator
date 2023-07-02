@@ -13,7 +13,7 @@ list* db_create() {
 }
 #pragma warning(disable : 4996)	// отключаем предупреждениедл€—ерьезность ќшибка	C4996	'strcpy': This function or variable may be unsafe.Consider using strcpy_s instead.To disable deprecation, use _CRT_SECURE_NO_WARNINGS.See online help for details.calc_Chat_Gpt	C : \Users\User\source\repos\calc_Chat_Gpt\calc_Chat_Gpt\List.c	27
 
-void db_insert(list* lst, int index, char* data) {
+void db_insert(list* lst, int index, Leksema data) {
     // создадим указатель переменной элемента списка, 
     // и присвоим ему значение указател€ на первый элемент списка
     list_item* base = lst->head;
@@ -24,9 +24,8 @@ void db_insert(list* lst, int index, char* data) {
     // выделим пам€ть внутри самого элемента структуры куда принимаем данные,
     // и получим указатель на него,
     // strlen() нужен, чтобы выделенна€ пам€ть была равна длинне полученной строки.
-    new_item->data = malloc(sizeof(char) * strlen(data));
-    strcpy(new_item->data, data); // копируем туда данные
-
+  
+    new_item->data = data;
     // ѕришла пора решить куда мы определим элемент,
     // т.к. у нас еще нет элементов, lst->head вернет нам NULL.
     // —ледовательно нужно условие, при создании первого элемента списка.
@@ -64,28 +63,21 @@ void db_insert(list* lst, int index, char* data) {
     lst->count++; // увеличим размер на единицу
 }
 
-char* db_read(list* lst, int index) {
+Leksema* db_read(list* lst, int index) {
     list_item* base = get_element(lst, index);
+    Leksema* value;
     if (base == NULL)
-        return NULL;
+        value->type = TYPE_OPERATOR;
+        value->operation = 'x';  /// если при обработке operation == 'x' возвращать ошибку
+        return value;
 
-    char* value = malloc(sizeof(char) * strlen(base->data)); // ¬ыдел€ем пам€ть под строку
-    strcpy(value, base->data); // копируем данные
+    value = &(base->data);
+  
 
     return value; // возвращаем полученное значение
 }
 
-int db_search(list* lst, char* data) {
-    int i = 0; // организуем счетчик
-    list_item* base = lst->head; // перейдем к первому элементу
-    // воспользуемс€ функцией strcmp, чтобы сравнить перебираемые строки
-    while (strcmp(base->data, data) != 0) {
-        // пока строки не совпадут с тем что бы ищем, будем перебирать элементы
-        base = base->next;
-        i++;
-    }
-    return i; // получив совпадение просто вернем полученный индекс
-}
+
 
 list_item* get_element(list* lst, int index) {
     list_item* base;
@@ -132,21 +124,103 @@ void db_delete(list* lst, int index) {
     lst->count--; // уменьшаем длинну списка на единицу
 }
 
-void db_print(list* lst) {
-    list_item* base = lst->head; // переходим к началу списка
-    puts("\033[43m***Printing a list***\033[0m");
+void push_front(list* lst, Leksema lex) {
+    list_item* base = lst->head;
 
-    if (lst->count == 0) { // если список пустой, так и говорим
-        printf("The list is empty\n");
+    list_item* new_item = (list_item*)malloc(sizeof(list_item));
+
+    new_item->data = lex;
+
+    
+    if (base == NULL) {
+        // Ётот элемент единственный, а значит его указатели будут NULL.
+        new_item->next = NULL;
+        new_item->prev = NULL;
+
+        // ѕри этом, он сам будет первым и последним в списке.
+        lst->head = new_item;
+        lst->tail = new_item;
+        lst->count++; // ”величем кол-во на единицу
         return;
     }
-
-    int i = 0; // организуем счетчик
-    while (base != NULL) { // ѕока все элементы не кончатьс€ мы будем их перебирать
-        printf("ID: %d || Data: %s\n", i, (char*)base->data); // вывод€ на экран
-        base = base->next;
-        i++;
+    else {
+        base->prev = new_item;
+        new_item->prev = NULL;
+        new_item->next = base;
+        lst->head = new_item;
     }
-    // ¬ конце покажем какой размер у нашего списка
-    printf("Base size: %d\n", lst->count);
+    
+    lst->count++; // увеличим размер на единицу
+}
+
+void push_back(list* lst, Leksema* lex) {
+    list_item* base = lst->tail;
+
+    list_item* new_item = (list_item*)malloc(sizeof(list_item));
+
+    new_item->data = lex;
+    if (base == NULL) {
+        // Ётот элемент единственный, а значит его указатели будут NULL.
+        new_item->next = NULL;
+        new_item->prev = NULL;
+
+        // ѕри этом, он сам будет первым и последним в списке.
+        lst->head = new_item;
+        lst->tail = new_item;
+        lst->count++; // ”величем кол-во на единицу
+    }
+    else {
+        base->next = new_item;
+        new_item->next = NULL;
+        new_item->prev = base;
+        lst->tail = new_item;
+        
+    }
+    lst->count++;
+}
+
+Leksema* pop_front(list* lst) {
+    list_item* base = lst->head;
+
+    Leksema* value;
+    if (base == NULL) {
+        value->type = TYPE_OPERATOR;
+        value->operation = 'x';  /// если при обработке operation == 'x' возвращать ошибку
+        return value;
+    }
+    else {
+        if (base->data.type == TYPE_OPERATOR) {
+            value->type = TYPE_OPERATOR;
+            value->operation = base->data.operation;
+        }
+        else if (base->data.type == TYPE_NUMBER) {
+            value->type = TYPE_NUMBER;
+            value->numder = base->data.numder;
+        }
+    }
+    return value;
+}
+
+
+Leksema* pop_back(list* lst) {
+    list_item* base = lst->tail;
+
+    Leksema* value;
+    if (base == NULL) {
+        value->type = TYPE_OPERATOR;
+        value->operation = 'x';  /// если при обработке operation == 'x' возвращать ошибку
+        return value;
+    }
+    else {
+        if (base->data.type == TYPE_OPERATOR) {
+            value->type = TYPE_OPERATOR;
+            value->operation = base->data.operation;
+        }
+        else if (base->data.type == TYPE_NUMBER) {
+            value->type = TYPE_NUMBER;
+            value->numder = base->data.numder;
+        }
+    }
+    return value;
+
 }
