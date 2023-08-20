@@ -1,0 +1,38 @@
+#pragma once
+
+#include <stdio.h> // стандартная библиотека Си
+#include <string.h> // для работы со строками
+#include <stdlib.h> // для работы с памятью
+#include "Lecksema.h"
+
+// структура элемента списка
+typedef struct list_item {
+    Leksema data; // по этому указателю мы храним какие-то данные
+    struct list_item* next; // это у нас ссылка на следующий указатель
+    struct list_item* prev; // это у нас с  сылка на предыдущий указатель
+} list_item;
+
+// Общая структура списка
+typedef struct list {
+    int count; // информация о размере списка
+    list_item* head; // это ссылка на головной элемент
+    list_item* tail; // это у нас ссылка на последний элемент (хвост списка)
+} list;
+
+list* db_create();
+
+void db_insert(list* lst, int index, Leksema data);
+
+Leksema* db_read(list* lst, int index);
+
+//void db_print(list* lst);
+
+void push_front(list* lst, Leksema lex);
+
+void push_back(list* lst, Leksema* lex);
+
+Leksema* pop_front(list* lst);
+
+Leksema* pop_back(list* lst);
+
+list_item* get_element(list* lst, int index); // тип данных возврашаемый функцией ? это структура ?
