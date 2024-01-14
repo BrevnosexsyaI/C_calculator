@@ -99,9 +99,9 @@ list_item* get_element(list* lst, int index) {
     list_item* base;
     int middle = lst->count / 2; // Вычисляем середину списка
 
-    if (index > middle) { // если индекс больше середины
+    if (index > middle) { // если индекс больше середины // возмодно надо больше или равно внес изменения типа   >     на    >=  
         base = lst->tail;
-        for (int i = lst->count; i > index; i--)
+        for (int i = lst->count--; i > index; i--)   
             base = base->prev;
     }
     else { // если индекс меньше середины
@@ -129,17 +129,32 @@ void db_delete(list* lst, int index) {
     next = base->next; // мы получаем следующий элемент
 
     // переопределение указателя для предыдущего элемента на следующий
-    if (prev != NULL)
+    if (prev != NULL) {
         prev->next = base->next;
+    }
+    else
+        lst->head = next; // Если удаляем первый элемент обновим указатеь на голову
 
-    // И тоже самое для предыдущего элемента
-    if (next != NULL)
+    if (next != NULL) {
         next->prev = base->prev;
+    }
+    else
+        lst->tail = prev; // Если удаляем последний элемент, обновляем указатель на хвост списка
+
 
     free(base); // Освобождаем память 
     lst->count--; // уменьшаем длинну списка на единицу
 }
 
+
+
+void db_delete_2(list* lst, int index) {
+    list_item* base = get_element(lst, index);
+
+
+
+
+}
 void push_front(list* lst, Leksema lex) {
     list_item* base = lst->head;
 
@@ -176,11 +191,13 @@ void push_back(list* lst, Leksema* lex) {
     list_item* base = lst->tail;
 
     list_item* new_item = (list_item*)malloc(sizeof(list_item));
-    if (new_item == NULL) {
-        printf("\033[3;31mError! The list item was not found...\n\033[0m");
-        return NULL;
-    }
+        if (new_item == NULL) {
+          fprintf(stderr, "Ошибка: Не удалось выделить память для элемента списка.\n");
+           return NULL;
+        }
     new_item->data = *lex;
+    new_item->next = NULL;
+
     if (base == NULL) {
         // Этот элемент единственный, а значит его указатели будут NULL.
         new_item->next = NULL;
@@ -196,9 +213,9 @@ void push_back(list* lst, Leksema* lex) {
         new_item->next = NULL;
         new_item->prev = base;
         lst->tail = new_item;
-
+        lst->count++;
     }
-    lst->count++;
+    
 }
 
 Leksema* pop_front(list* lst) {
@@ -271,3 +288,10 @@ Leksema* pop_back(list* lst) {
     return value;
 
 }
+
+
+
+
+
+
+

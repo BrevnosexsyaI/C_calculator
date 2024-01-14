@@ -35,15 +35,16 @@ int main() {
 	printf("¬¬≈ƒ» свое выражение :");
 
 	
-	Leksema Num; // —труктура создаем 
+	/*Leksema Num;*/ // —труктура создаем 
 
-	fgets(buffer, sizeof(buffer), stdin);
-	while (buffer[i] != NULL) {
-		if (buffer[i] == " ") {
+fgets(buffer, sizeof(buffer), stdin);
+	while (buffer[i] != '\0' && buffer[i] != '\n') {
+		if (buffer[i] == ' ') {
 			i++;
 			continue;
 		}
-		else if (buffer[i] == '+' || buffer[i] == '-') {
+		else if (buffer[i] == '+' ) // исправитть минус в разные занести 
+		{
 			// здес€ должна быть лексема 
 			
 			Leksema* Opera = {0};
@@ -60,6 +61,34 @@ int main() {
 
 			continue;
 		}
+		else if (buffer[i] == '-') 
+		{
+
+			Leksema* Opera = { 0 };
+			Opera = (Leksema*)malloc(sizeof(Leksema));
+			if (Opera == NULL) {
+				fprintf(stderr, "Error: выделить пам€ть дл€ структуры Leksema не удалось .\n"); //спользуетс€ дл€ вывода сообщени€ об ошибке на стандартный поток ошибок
+				i++;
+				continue;
+			}
+			Opera->operation = buffer[i]; // выше предусмотренна проверка на размывание пустого указател€ —6011 
+			Opera->type = TYPE_OPERATOR;
+			push_back(expression, Opera);
+			i++;
+
+			continue;
+		}
+		/*else if (buffer[i] == '-') {
+			if (i == 0) {
+
+			}
+			else if () {
+			// если прошло условие, нужно из минуса и след числа сделать отрицательное число
+			} // вариант с тем, что прошлый элемент в списке это знак 
+
+				// вариант с тем, что прошлый элемент число
+				
+		}*/
 		else if (buffer[i] == '*' || buffer[i] == '/') {
 			
 			Leksema* Opera = {0};
@@ -76,7 +105,7 @@ int main() {
 
 			continue;
 		}
-
+		 
 		else if (isdigit(buffer[i])) {
 			char* buffer_num = malloc(BUFFER_NUM_SIZE * sizeof(char));
 			if (buffer_num == NULL) {
@@ -101,11 +130,11 @@ int main() {
 			buffer_num[j] = '\0'; // «авершаем строку символом '\0'
 
 			return_num = string_to_double(buffer_num);
-
-			// ... остальной код ...
-
 			free(buffer_num); // ќсвобождаем пам€ть после использовани€
 		
+
+
+
 			Leksema* Num = {0};
 			Num = (Leksema*)malloc(sizeof(Leksema));
 			if (Num == NULL) {
@@ -123,10 +152,88 @@ int main() {
 			// степень логорифмы экспоненты 
 			// число пи sin \ cos
 		}
+		
+
+		
+	}//0-2*4+6     
+	//	0-2*4+6/6
+	//0-2*4+60-20-2*4+60-20-2*4+60-20-2*4+60-20-2*4+60-20-2*4+60-2
+	//	1*1+1*8/8
+
+		printf("\n");	// просто проверить длину и проверить равна ли 1 и вывести результат
+	for (int i = 0; i <= expression->count ; i++)
+	{
+		/*	multiply_My(expression, i);*/
+		list_item* base = get_element(expression, i);
+		if (base->data.type)
+		{
+			printf("%g", base->data.numder);
+		}
+		else
+		{
+			char buf = base->data.operation;
+			printf("%c", base->data.operation);
+			
+		}
+		base = (0);
+	}
+	
+
+
+	// 9 / 9 * 6
+	for (int i = 0; i < expression->count; i++)
+	{
+		/*	multiply_My(expression, i);*/
+		list_item* base = get_element(expression, i);
+		char buf = base->data.operation;
+		if (buf == '*' )   //обрабока умножени€ 
+		{
+			expression = multiply_My(expression, i);	
+			i--;
+		}
+
+		base = (0);
+	}
+
+	for (int i = 0; i < expression->count; i++)
+	{
+		list_item* base = get_element(expression, i);
+		char buf = base->data.operation;
+		 if (buf == '/') 
+{
+			expression =  Divide_My( expression, i);
+			i--;
+		}
+		base = (0);
 	}
 
 
 
+	for (int i = 0; i < expression->count; i++)   ///////можно минимизировать циклы				 нельз€ нахуй 
+	{
+		list_item* base = get_element(expression, i);
+		char buf = base->data.operation;
+		if (buf == '+')  //обрабока умножени€ 
+		{
+			expression = sum_My(expression, i);
+			i--;
+		}
+		base = (0);
+	}
+
+	for (int i = 0; i < expression->count; i++)
+	{
+		list_item* base = get_element(expression, i);
+		char buf = base->data.operation;
+		if (buf == '-')   //обрабока умножени€ 
+		{
+			expression = subtract_My(expression, i);
+			i--;
+		}
+		base = (0);
+	}
+
+	
 
 
 
@@ -134,47 +241,30 @@ int main() {
 
 
 
+		printf("\n");	// просто проверить длину и проверить равна ли 1 и вывести результат
+	for (int i = 0; i < expression->count ; i++)
+	{
+		/*	multiply_My(expression, i);*/
+		list_item* base = get_element(expression, i);
+		if (base->data.type)
+		{
+			printf("%g", base->data.numder);
+		}
+		else
+		{
+			char buf = base->data.operation;
+			printf("%c", base->data.operation);
+			
+		}
+		base = (0);
+	}
+	
 
 
+
+
+	return 0;
 
 }
 
 
-
-
-	/*char* token = strtok(buffer, " "); // –азделитель раздел€ем полученную строку счита€ что между всеми компонентами есть пробел '	'
-
-
-
-
-
-
-
-
-
-	while (token != NULL) {
-		if (isdigit(token[0])) {
-			db_insert(expression, -1, token); // ƒобавл€ем операнд в конец списка
-		}
-		else {
-			db_insert(expression, -1, token); // ƒобавл€ем оператор в конец списка
-		}
-		token = strtok(NULL, " ");
-	}
-	list_item* current = expression->head;
-
-	while (current != NULL) {
-		if (isdigit(((char*)current->data)[0])) {
-			// Ёто операнд, выполните соответствующие действи€
-			// ...
-
-		}
-		else {
-			// Ёто оператор, выполните соответствующие действи€
-			// ...
-		}
-		current = current->next;
-	}
-
-
-}}*/

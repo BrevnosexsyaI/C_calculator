@@ -1,8 +1,8 @@
 #pragma once
 #include <stdbool.h>
 
-#define TYPE_NUMBER 1
-#define TYPE_OPERATOR 0
+#define TYPE_NUMBER 1	// число 
+#define TYPE_OPERATOR 0	// оператор + - ...
 
 typedef struct Leksema
 {
